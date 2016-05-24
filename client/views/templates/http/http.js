@@ -1,5 +1,5 @@
 //https://www.eventbriteapi.com/v3/users/me/owned_events/?token=GRMKL6M535BLYEEF72RE
-// Meteor.http.call('OPTIONS', 'https://www.eventbrite.com/json/events_earch/?token=GRMKL6M535BLYEEF72RE&organizer.id=10618084925',
+// Meteor.http.call('OPTIONS', 'https://www.eventbrite.com/json/events_search/?token=GRMKL6M535BLYEEF72RE&organizer.id=10618084925',
 //     {
 //         headers:{
 //             'Content-Type':'application/json',
@@ -26,7 +26,7 @@ var ORGANIZER_ID = '10618084925';
 // });
 
 
-var EventbriteAPI = require('eventbrite');
+// var EventbriteAPI = require('eventbrite');
 // try {
 //         api = EventbriteAPI({
 //         token : EVENTBRITE_ACCESS_TOKEN,
@@ -46,15 +46,30 @@ var EventbriteAPI = require('eventbrite');
 //         console.log(JSON.stringify(data));
 //     }
 // });
-var EventbriteClient = EventbriteAPI({
-    'token' : EVENTBRITE_ACCESS_TOKEN,
-    'organizer.id' : ORGANIZER_ID
-});
+// var EventbriteClient = EventbriteAPI({
+//     'token' : EVENTBRITE_ACCESS_TOKEN,
+//     'organizer.id' : ORGANIZER_ID
+// });
 
-EventbriteClient.event_search(function(error, data){
-    if(error) {
-        console.log(error.message);
-    } else {
-        console.log(data);
-    }
-});
+// EventbriteClient.event_search(function(error, data){
+//     if(error) {
+//         console.log(error.message);
+//     } else {
+//         console.log(data);
+//     }
+// });
+
+if(Meteor.isServer) {
+    Meteor.methods({
+        eventBrite: function() {
+            this.unblock();
+            return Meteor.http.call('https://www.eventbrite.com/json/events_search?token='+EventbriteAPI+'&organizer.id='+ORGANIZER_ID);
+        }
+    });
+}
+
+if(Meteor.isClient) {
+    Meteor.call('eventbrite',function (error, result) {
+        console.log(results.content);
+    });
+}
